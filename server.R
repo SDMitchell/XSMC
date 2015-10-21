@@ -19,12 +19,12 @@ NumberOfPeriodsRemaining <- function(monthlyPayment, annualInterestRate, princip
 
 svrMortgageCalc <- function(input, output){
 	payments <- reactive({NumberOfPeriodsRemaining(input$monthlyPayment, input$interestRate*0.01, input$principal)})
-	output$paymentsNeeded <- renderPrint({ifelse(payments() < 0, "The payments are not large enough to pay the interest", paste(payments(), "months"))})
+	output$paymentsNeeded <- renderPrint({ifelse(payments() < 1, "The payment parameters are not valid", paste(payments(), "months"))})
 
 	# Final amount paid minus the original principal
-	output$interestPaid <- renderPrint({ifelse(payments() < 0, "$0.00", paste("$",input$monthlyPayment * payments() - input$principal, sep=''))})
+	output$interestPaid <- renderPrint({ifelse(payments() < 1, "$0.00", paste("$",round(input$monthlyPayment * payments() - MortgageBalancePaid(input$monthlyPayment, input$interestRate*0.01, input$principal, payments()), 2), sep=''))})
 
-	output$plotDone <- reactive({ifelse(payments() < 0, "", "   ")})
+	output$plotDone <- reactive({ifelse(payments() < 2, "", "   ")})
 
 	# Our rendering of the bad news
 	output$paymentPlot <- renderPlot({
