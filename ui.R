@@ -18,7 +18,7 @@ uiMortgageCalc <- function()
 			verbatimTextOutput("interestPaid")
 		)),
 		column(12,uiOutput("plotDone"),
-			   conditionalPanel(condition = "output.plotDone == 'Payment Schedule'",
+			   conditionalPanel(condition = "output.plotDone == '   '",
 			   				 plotOutput("paymentPlot")
 		)
 		)
