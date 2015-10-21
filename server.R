@@ -3,6 +3,10 @@ library(ggplot2)
 library(Hmisc)
 library(markdown)
 
+#
+# These helper methods are pretty self-explanatory - they just segregate some of the math into an out-of-the-way place.
+#
+
 MortgageBalancePaid <- function(monthlyPayment, annualInterestRate, principal, monthsPaid) {
 	(12 * monthlyPayment/annualInterestRate - principal)*((1 + annualInterestRate/12)^monthsPaid - 1)
 }
@@ -19,6 +23,9 @@ NumberOfPeriodsRemaining <- function(monthlyPayment, annualInterestRate, princip
 	per
 }
 
+#
+# The main server function that creates our reactive values. Mostly simple math and a graph; nothing too crazy.
+#
 svrMortgageCalc <- function(input, output){
 	payments <- reactive({NumberOfPeriodsRemaining(input$monthlyPayment, input$interestRate*0.01, input$principal)})
 	output$paymentsNeeded <- renderPrint({ifelse(payments() < 1, "The payment parameters are not valid", paste(payments(), "months"))})
@@ -26,6 +33,8 @@ svrMortgageCalc <- function(input, output){
 	# Final amount paid minus the original principal
 	output$interestPaid <- renderPrint({ifelse(payments() < 1, "$0.00", paste("$",round(input$monthlyPayment * payments() - MortgageBalancePaid(input$monthlyPayment, input$interestRate*0.01, input$principal, payments()), 2), sep=''))})
 
+	# A TRUE/FALSE control that lets the UI determine if the graph should be rendered. Not a conventional (or correct) way to do this,
+	# but it seems to get the job done. FALSE is an empty string and TRUE is three spaces, both of which will get rendered as nothing on the main form.
 	output$plotDone <- reactive({ifelse(payments() < 2, "", "   ")})
 
 	# Our rendering of the bad news
@@ -45,11 +54,12 @@ svrMortgageCalc <- function(input, output){
 					   panel.grid.major = element_line(colour="#FFDEAD"))
 		g <- g + labs(x="Month", y="Total Interest Paid", title="Mortgage Cost Calculator")
 		g
-		#plot(x=seq(1, payments()), y=input$monthlyPayment*seq(1,payments()) - MortgageBalancePaid(input$monthlyPayment, input$interestRate*0.01, input$principal, seq(1,payments())))
 	})
 }
 
-
+#
+# The driver method for the server-side code
+#
 shinyServer(
 	function(input, output) {
 		svrMortgageCalc(input, output)
