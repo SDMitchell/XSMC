@@ -1,5 +1,7 @@
 library(shiny)
 library(ggplot2)
+library(Hmisc)
+library(markdown)
 
 MortgageBalancePaid <- function(monthlyPayment, annualInterestRate, principal, monthsPaid) {
 	(12 * monthlyPayment/annualInterestRate - principal)*((1 + annualInterestRate/12)^monthsPaid - 1)

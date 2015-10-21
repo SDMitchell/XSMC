@@ -1,9 +1,14 @@
 library(shiny)
+library(markdown)
 
 uiMortgageCalc <- function()
 {
 	fluidPage(
 		titlePanel("XSMC - The eXtremely Simple Mortgage Calculator"),
+		column(12,
+			   tabsetPanel(
+			   	tabPanel("XSMC",includeMarkdown("documentation.md"))
+			   )),
 		column(12,
 			sidebarPanel(
 				sliderInput('principal', 'Principal (original value of loan)',value = 150000, min = 1000, max = 500000, step = 1000),
@@ -20,8 +25,7 @@ uiMortgageCalc <- function()
 		column(12,uiOutput("plotDone"),
 			   conditionalPanel(condition = "output.plotDone == '   '",
 			   				 plotOutput("paymentPlot")
-		)
-		)
+		))
 	)
 }
 
